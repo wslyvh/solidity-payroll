@@ -52,6 +52,13 @@ contract ExchangeRates is Owned, usingOraclize {
             return (tickers[ticker].value, tickers[ticker].lastUpdated);
     }
 
+    function getDefaultExchangeRate() 
+        constant 
+        public 
+        returns (uint value) {
+            return tickers[bytes32("ETHUSD")].value;
+        }
+
     function updateExchangeRate(bytes32 ticker) {
         require(ticker.length > 0);
         require(tickers[ticker].active);

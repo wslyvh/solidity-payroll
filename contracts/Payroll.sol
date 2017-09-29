@@ -7,7 +7,6 @@ import "./ExchangeRates.sol";
 contract Payroll is EmployeeDirectory, ExchangeRates, PayrollInterface {
     
     uint private fundsAvailableUSD;
-    uint private exchangeRate;
 
     function Payroll() payable {
         
@@ -18,7 +17,7 @@ contract Payroll is EmployeeDirectory, ExchangeRates, PayrollInterface {
         public
         returns (bool success) {
             require(msg.value > 0); 
-            fundsAvailableUSD += msg.value * exchangeRate;
+            fundsAvailableUSD += msg.value * getDefaultExchangeRate(); // TODO: funding with other tokens
 
             LogFundsAdded(msg.sender, msg.value);
             return true;
@@ -41,10 +40,10 @@ contract Payroll is EmployeeDirectory, ExchangeRates, PayrollInterface {
         onlyEmployee
         public
         returns (bool success) { 
-            require(exchangeRate > 0);
+            require(getDefaultExchangeRate() > 0);
             require(employees[msg.sender].lastPayDate < block.timestamp); // (block.timestamp + 1 month)
 
-            uint monthlySalary = (employees[msg.sender].yearlyUSDSalary / 12) / exchangeRate;
+            uint monthlySalary = (employees[msg.sender].yearlyUSDSalary / 12) / getDefaultExchangeRate();
             // Divide on token/allocation(s)
 
             employees[msg.sender].lastPayDate = block.timestamp;

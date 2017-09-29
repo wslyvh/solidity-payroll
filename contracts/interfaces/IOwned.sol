@@ -1,6 +1,6 @@
 pragma solidity ^0.4.15;
 
-contract OwnedInterface {
+contract IOwned {
 
     event LogOwnerSet(address indexed previousOwner, address indexed newOwner);
 

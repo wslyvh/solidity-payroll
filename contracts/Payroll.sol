@@ -1,10 +1,10 @@
 pragma solidity ^0.4.15;
 
-import "./interfaces/PayrollInterface.sol";
+import "./interfaces/IPayroll.sol";
 import "./EmployeeDirectory.sol";
 import "./ExchangeRates.sol";
 
-contract Payroll is EmployeeDirectory, ExchangeRates, PayrollInterface {
+contract Payroll is EmployeeDirectory, ExchangeRates, IPayroll {
     
     uint private fundsAvailableUSD;
 
@@ -23,24 +23,12 @@ contract Payroll is EmployeeDirectory, ExchangeRates, PayrollInterface {
             return true;
         }
 
-    function determineAllocation(address[] tokens, uint[] distribution) 
-        onlyEmployee
-        public
-        returns (bool success) {
-            require(employees[msg.sender].lastPayDate < block.timestamp); // (block.timestamp + 6 months)
-
-            // Re-allocation
-            employees[msg.sender].lastPayDate = block.timestamp;
-
-            LogAllocationDetermined(msg.sender, tokens, distribution);
-            return true;
-        }
-
     function payday()
         onlyEmployee
         public
         returns (bool success) { 
             require(getDefaultExchangeRate() > 0);
+            require(employees[msg.sender].contractEndDate > block.timestamp);
             require(employees[msg.sender].lastPayDate < block.timestamp); // (block.timestamp + 1 month)
 
             uint monthlySalary = (employees[msg.sender].yearlyUSDSalary / 12) / getDefaultExchangeRate();
@@ -53,9 +41,6 @@ contract Payroll is EmployeeDirectory, ExchangeRates, PayrollInterface {
             return true;
         }
 
-    /*
-        CONSTANTS
-    */
     function calculatePayrollBurnrate() 
         constant
         public

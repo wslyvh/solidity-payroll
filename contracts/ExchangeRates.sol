@@ -19,13 +19,13 @@ contract ExchangeRates is Owned, usingOraclize {
     mapping(bytes32 => Pricefeed) tickers;
     mapping(bytes32 => bytes32) validCallbacks;
 
-    function ExchangeRates() {
+    function ExchangeRates() payable {
         OAR = OraclizeAddrResolverI(0x5B9be6B243eD1dAA4B68332A20C0d3De9d25D902);
         
         bytes32 id = bytes32("ETHUSD");
         tickers[id].query = "json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0";
 
-        updateExchangeRate(id);
+        //updateExchangeRate(id);
     }
 
     function addOrUpdateTicker(bytes32 ticker, string query, bool execute)

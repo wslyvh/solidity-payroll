@@ -1,8 +1,8 @@
 pragma solidity ^0.4.15;
 
-import "./EmployeeDirectoryInterface.sol";
+import "./IEmployeeDirectory.sol";
 
-contract PayrollInterface is EmployeeDirectoryInterface {
+contract IPayroll is IEmployeeDirectory {
 
   event LogFundsAdded(address sender, uint amount);
   event LogAllocationDetermined(address sender, address[] tokens, uint[] distribution);

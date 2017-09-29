@@ -1,8 +1,8 @@
 pragma solidity ^0.4.15;
 
-import "./interfaces/OwnedInterface.sol";
+import "./interfaces/IOwned.sol";
 
-contract Owned is OwnedInterface { 
+contract Owned is IOwned { 
 
     address owner;
 

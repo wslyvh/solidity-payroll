@@ -55,19 +55,6 @@ contract EmployeeDirectory is Owned, IEmployeeDirectory {
             return true;
         }
 
-    function determineAllocation(address[] tokens, uint[] distribution) 
-        onlyEmployee
-        public
-        returns (bool success) {
-            require(employees[msg.sender].lastPayDate < block.timestamp); // (block.timestamp + 6 months)
-
-            // Re-allocation
-            employees[msg.sender].lastPayDate = block.timestamp;
-
-            LogAllocationDetermined(msg.sender, tokens, distribution);
-            return true;
-        }
-
     function getEmployeeCount() 
         constant
         public

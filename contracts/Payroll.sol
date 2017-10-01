@@ -6,6 +6,9 @@ import "./ExchangeRates.sol";
 
 contract Payroll is EmployeeDirectory, ExchangeRates, IPayroll {
     
+    uint constant day = 60*60*24;
+    uint constant week = 60*60*24*7;
+    uint constant month = 60*60*24*30;
     uint private fundsAvailableUSD;
 
     function Payroll() payable {
@@ -29,7 +32,7 @@ contract Payroll is EmployeeDirectory, ExchangeRates, IPayroll {
         returns (bool success) { 
             require(getDefaultExchangeRate() > 0);
             require(employees[msg.sender].contractEndDate > block.timestamp);
-            require(employees[msg.sender].lastPayDate < block.timestamp); // (block.timestamp + 1 month)
+            require(employees[msg.sender].lastPayDate < (today() + month)); 
 
             uint monthlySalary = (employees[msg.sender].yearlyUSDSalary / 12) / getDefaultExchangeRate();
             // Divide on token/allocation(s)
@@ -40,6 +43,20 @@ contract Payroll is EmployeeDirectory, ExchangeRates, IPayroll {
             LogEmployeePayout(msg.sender, monthlySalary);
             return true;
         }
+        
+
+    function determineAllocation(address[] tokens, uint[] distribution) 
+        onlyEmployee
+        public
+        returns (bool success) {
+            require(employees[msg.sender].lastPayDate < (today() + month*6)); 
+
+            // Re-allocation
+            employees[msg.sender].lastPayDate = block.timestamp;
+
+            LogAllocationDetermined(msg.sender, tokens, distribution);
+            return true;
+        } 
 
     function calculatePayrollBurnrate() 
         constant
@@ -58,4 +75,12 @@ contract Payroll is EmployeeDirectory, ExchangeRates, IPayroll {
         returns (uint months) {
             return fundsAvailableUSD / calculatePayrollBurnrate();
         }
+        
+    function today() 
+        private
+        constant
+        returns (uint day) {
+            return now / 1 days;
+        }
+
 }
